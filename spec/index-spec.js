@@ -8,9 +8,9 @@ describe('handler', () => {
 
     beforeEach(() => {
         moxios.install();
-        event = { baseUrl: 'https://api.example.com', path: '/hello/world' };
+        event = { StageVariables: { baseUrl: 'https://api.service.hmrc.gov.uk/', path: 'hello/world' } };
         callback = jasmine.createSpy('callback');
-        endpointUrl = event.baseUrl + event.path;
+        endpointUrl = event.StageVariables.baseUrl + event.StageVariables.path;
     });
 
     afterEach(() => {
@@ -22,6 +22,15 @@ describe('handler', () => {
 
         moxios.wait(() => {
             expect(moxios.requests.mostRecent().url).toBe(endpointUrl);
+            done();
+        });
+    });
+
+    it('makes a request with the expected Accept header', done => {
+        handler(event, context, callback);
+
+        moxios.wait(() => {
+            expect(moxios.requests.mostRecent().headers.Accept).toBe('application/vnd.hmrc.1.0+json');
             done();
         });
     });
